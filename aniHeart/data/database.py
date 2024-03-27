@@ -22,7 +22,12 @@ def create_database(db_name):
 
     cursor.execute('''CREATE TABLE IF NOT EXISTS anime (
                       genre_name TEXT,
-                      id, INTEGER)''')
+                      anime_name TEXT,
+                      id INTEGER)''')
+
+    cursor.execute('''CREATE TABLE IF NOT EXISTS favorite (
+                    user_id INTEGER,
+                    anime_name TEXT)''')
 
 
     # Commit changes and close connection

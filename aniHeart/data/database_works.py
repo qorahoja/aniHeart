@@ -10,7 +10,7 @@ class UserDatabase:
         self.conn.close()
 
     def user_exists(self, user_id):
-        self.cursor.execute("SELECT COUNT(*) FROM users WHERE id=?", (user_id,))
+        self.cursor.execute("SELECT COUNT(*) FROM users WHERE user_id=?", (user_id,))
         count = self.cursor.fetchone()[0]
         return count > 0
 
@@ -38,6 +38,48 @@ class UserDatabase:
         return [row[0] for row in genres]
 
 
-    def insert_anme(self, genre, id):
-        self.cursor.execute("INSERT INTO anime (genre_name, id) VALUES (?, ?)", (genre, id,))
+    def insert_anme(self, genre, name, id):
+        self.cursor.execute("INSERT INTO anime (genre_name, anime_name, id) VALUES (?, ?, ?)", (genre, name, id,))
         self.conn.commit()
+
+    def catch_anime_name(self, name):
+        self.cursor.execute("SELECT id FROM anime WHERE anime_name = ?", (name,))
+        anime_id = self.cursor.fetchall()
+        return [row[0] for row in anime_id]
+
+    def catch_anime_count(self, name):
+        self.cursor.execute("SELECT COUNT(*) AS count FROM anime WHERE anime_name = ?", (name,))
+        result = self.cursor.fetchone()
+        return result[0] 
+
+    def anime_name(self, idx):
+        self.cursor.execute("SELECT anime_name FROM anime WHERE id = ?", (idx,))
+        result = self.cursor.fetchone()
+        return result[0]
+
+    def anime_id(self, name):
+        self.cursor.execute("SELECT id FROM anime WHERE anime_name = ?", (name,))
+        result = self.cursor.fetchall()
+        return [row[0] for row in result]
+    
+    def add_anime_to_favorites(self, user_id, anime_name):
+        self.cursor.execute("INSERT INTO favorite (user_id, anime_name) VALUES (?, ?)", (user_id, anime_name,))
+        self.conn.commit()
+
+    def catch_animename_by_genre(self, genre):
+        self.cursor.execute("SELECT anime_name FROM anime WHERE genre_name = ?", (genre,))
+        result = self.cursor.fetchall()
+        return [row[0] for row in result]
+
+    def search_by_name(self, name):
+        self.cursor.execute("SELECT anime_name FROM anime WHERE anime_name = ?", (name,))
+        result = self.cursor.fetchall()
+        return [row[0] for row in result]
+
+    def saved(self, user_id):
+        self.cursor.execute("SELECT anime_name FROM favorite WHERE user_id = ?", (user_id,))
+        result = self.cursor.fetchall()
+        return [row[0] for row in result]
+    
+    # Fetch the result
+        
